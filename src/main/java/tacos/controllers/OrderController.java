@@ -13,7 +13,6 @@ import tacos.repository.OrderRepository;
 
 import javax.validation.Valid;
 
-@Slf4j
 @Controller
 @RequestMapping("/orders")
 @SessionAttributes("tacoOrder")

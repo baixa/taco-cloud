@@ -14,10 +14,10 @@ import tacos.classes.TacoOrder;
 import tacos.repository.IngredientRepository;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Controller
 @RequestMapping("/design")
 @SessionAttributes("tacoOrder")
@@ -32,11 +32,12 @@ public class DesignTacoController {
 
     @ModelAttribute
     public void addIngredientsToModel(Model model) {
-        Iterable<Ingredient> ingredients = ingredientRepository.findAll();
+        List<Ingredient> ingredients = new ArrayList<>();
+        ingredientRepository.findAll().forEach(ingredients::add);
         Type[] types = Ingredient.Type.values();
         for(Type type:types) {
             model.addAttribute(type.toString().toLowerCase(),
-                    filterByType((List<Ingredient>) ingredients, type));
+                    filterByType(ingredients, type));
         }
     }
     @ModelAttribute(name = "tacoOrder")
@@ -60,14 +61,14 @@ public class DesignTacoController {
     }
 
     @PostMapping
-    public String processTaco(@Valid Taco taco, Errors errors,
+    public String processTaco(@Valid Taco taco,
+                              Errors errors,
                               @ModelAttribute TacoOrder tacoOrder) {
         if(errors.hasErrors()) {
             return "design";
         }
 
         tacoOrder.addTaco(taco);
-        log.info("Processing taco: {}", taco);
         return "redirect:/orders/current";
     }
 }
